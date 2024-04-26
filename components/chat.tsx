@@ -3,10 +3,8 @@
 import { cn } from '@/lib/utils'
 import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
-import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 import { useEffect, useState } from 'react'
 import { useUIState, useAIState } from 'ai/rsc'
-import { Session } from '@/lib/types'
 import { usePathname, useRouter } from 'next/navigation'
 import { Message } from '@/lib/chat/actions'
 import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
@@ -14,27 +12,15 @@ import { toast } from 'sonner'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
-  id?: string
-  session?: Session
   missingKeys: string[]
 }
 
-export function Chat({ id, className, session, missingKeys }: ChatProps) {
+export function Chat({ className, missingKeys }: ChatProps) {
   const router = useRouter()
   const path = usePathname()
   const [input, setInput] = useState('')
   const [messages] = useUIState()
   const [aiState] = useAIState()
-
-  const [_, setNewChatId] = useLocalStorage('newChatId', id)
-
-  useEffect(() => {
-    if (session?.user) {
-      if (!path.includes('chat') && messages.length === 1) {
-        window.history.replaceState({}, '', `/chat/${id}`)
-      }
-    }
-  }, [id, path, session?.user, messages])
 
   useEffect(() => {
     const messagesLength = aiState.messages?.length
@@ -42,10 +28,6 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
       router.refresh()
     }
   }, [aiState.messages, router])
-
-  useEffect(() => {
-    setNewChatId(id)
-  })
 
   useEffect(() => {
     missingKeys.map(key => {
@@ -69,7 +51,6 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
         <div className="h-px w-full" ref={visibilityRef} />
       </div>
       <ChatPanel
-        id={id}
         input={input}
         setInput={setInput}
         isAtBottom={isAtBottom}

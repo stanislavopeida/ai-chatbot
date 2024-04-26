@@ -1,6 +1,5 @@
 'use server'
 
-import { signIn } from '@/auth'
 import { User } from '@/lib/types'
 import { AuthError } from 'next-auth'
 import { z } from 'zod'
@@ -36,12 +35,6 @@ export async function authenticate(
       })
 
     if (parsedCredentials.success) {
-      await signIn('credentials', {
-        email,
-        password,
-        redirect: false
-      })
-
       return {
         type: 'success',
         resultCode: ResultCode.UserLoggedIn

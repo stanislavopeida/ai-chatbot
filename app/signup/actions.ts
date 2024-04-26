@@ -1,6 +1,5 @@
 'use server'
 
-import { signIn } from '@/auth'
 import { ResultCode, getStringFromBuffer } from '@/lib/utils'
 import { z } from 'zod'
 import { kv } from '@vercel/kv'
@@ -71,14 +70,6 @@ export async function signup(
 
     try {
       const result = await createUser(email, hashedPassword, salt)
-
-      if (result.resultCode === ResultCode.UserCreated) {
-        await signIn('credentials', {
-          email,
-          password,
-          redirect: false
-        })
-      }
 
       return result
     } catch (error) {

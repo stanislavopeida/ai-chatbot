@@ -1,11 +1,9 @@
 import * as React from 'react'
 
-import { shareChat } from '@/app/actions'
 import { Button } from '@/components/ui/button'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { IconShare } from '@/components/ui/icons'
-import { ChatShareDialog } from '@/components/chat-share-dialog'
 import { useAIState, useActions, useUIState } from 'ai/rsc'
 import type { AI } from '@/lib/chat/actions'
 import { nanoid } from 'nanoid'
@@ -21,7 +19,6 @@ export interface ChatPanelProps {
 }
 
 export function ChatPanel({
-  id,
   title,
   input,
   setInput,
@@ -102,7 +99,7 @@ export function ChatPanel({
         {messages?.length >= 2 ? (
           <div className="flex h-12 items-center justify-center">
             <div className="flex space-x-2">
-              {id && title ? (
+              {title ? (
                 <>
                   <Button
                     variant="outline"
@@ -111,17 +108,6 @@ export function ChatPanel({
                     <IconShare className="mr-2" />
                     Share
                   </Button>
-                  <ChatShareDialog
-                    open={shareDialogOpen}
-                    onOpenChange={setShareDialogOpen}
-                    onCopy={() => setShareDialogOpen(false)}
-                    shareChat={shareChat}
-                    chat={{
-                      id,
-                      title,
-                      messages: aiState.messages
-                    }}
-                  />
                 </>
               ) : null}
             </div>
