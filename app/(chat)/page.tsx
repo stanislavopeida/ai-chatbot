@@ -10,7 +10,7 @@ export default async function IndexPage() {
   const missingKeys = await getMissingKeys()
 
   return (
-    <AI initialAIState={{ messages: [] }}>
+    <AI>
       <Chat missingKeys={missingKeys} />
     </AI>
   )
