@@ -63,7 +63,11 @@ export function PromptForm({
 
         // Submit and get response message
         const responseMessage = await submitUserMessage(value)
-        setMessages(currentMessages => [...currentMessages, responseMessage])
+        setMessages(currentMessages => [
+          ...currentMessages,
+          responseMessage,
+          'asd'
+        ])
       }}
     >
       <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-background sm:rounded-md sm:border">
