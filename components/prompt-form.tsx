@@ -12,20 +12,23 @@ import {
 } from '@/components/ui/tooltip'
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { useRouter } from 'next/navigation'
-import { Messages } from './chat'
+import { BotMessage, Messages } from './chat'
 import { nanoid } from 'nanoid'
 import { UserMessage } from './chat'
+import { Socket } from 'socket.io-client'
 
 export function PromptForm({
   input,
   setInput,
   messages,
-  setMessages
+  setMessages,
+  socket
 }: {
   input: string
   setInput: (value: string) => void
   messages: Messages
   setMessages: any
+  socket: Socket
 }) {
   const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
@@ -37,10 +40,21 @@ export function PromptForm({
     }
   }, [])
 
+  React.useEffect(() => {
+    socket.on('receiveMessage', message => {
+      if (message[1] === 'bot') {
+        setMessages([
+          ...messages,
+          { id: nanoid(), content: message, type: 'bot' } as BotMessage
+        ])
+      }
+    })
+  }, [socket])
+
   return (
     <form
       ref={formRef}
-      onSubmit={async (e: any) => {
+      onSubmit={(e: any) => {
         e.preventDefault()
         e.stopPropagation()
         if (input.trim() !== '') {
@@ -48,6 +62,7 @@ export function PromptForm({
             ...messages,
             { id: nanoid(), content: input, type: 'user' } as UserMessage
           ])
+          socket.emit('sendMessage', [input, 'user'])
         }
         setInput('')
       }}

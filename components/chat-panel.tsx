@@ -3,6 +3,7 @@ import * as React from 'react'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { Messages } from './chat'
+import { io } from 'socket.io-client'
 
 export interface ChatPanelProps {
   id?: string
@@ -14,6 +15,8 @@ export interface ChatPanelProps {
   messages: Messages
   setMessages: any
 }
+
+const socket = io('http://localhost:3001')
 
 export function ChatPanel({
   input,
@@ -78,6 +81,7 @@ export function ChatPanel({
             setInput={setInput}
             messages={messages}
             setMessages={setMessages}
+            socket={socket}
           />
         </div>
       </div>
