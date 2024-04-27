@@ -10,12 +10,14 @@ export function ChatList({ messages }: { messages: Messages }) {
   return (
     <div className="relative mx-auto max-w-2xl px-4">
       {messages.map((message, index) => {
+        console.log(messages)
+        console.log(isUserMessage(message))
         return (
           <>
             {isUserMessage(message) ? (
               <UserMessage content={message.content} />
             ) : (
-              <BotMessage content={message} />
+              <BotMessage content={message.content} />
             )}
             {index < messages.length - 1 && <Separator className="my-4" />}
           </>

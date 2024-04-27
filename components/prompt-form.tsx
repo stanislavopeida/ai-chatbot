@@ -28,7 +28,6 @@ export function PromptForm({
   messages: Messages
   setMessages: any
 }) {
-  const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
   const socket = new WebSocket('ws://localhost:8000/ws_test')
