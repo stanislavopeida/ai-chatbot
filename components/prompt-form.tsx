@@ -21,18 +21,17 @@ export function PromptForm({
   input,
   setInput,
   messages,
-  setMessages,
-  socket
+  setMessages
 }: {
   input: string
   setInput: (value: string) => void
   messages: Messages
   setMessages: any
-  socket: Socket
 }) {
   const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
+  const socket = new WebSocket('ws://localhost:8000/ws_test')
 
   React.useEffect(() => {
     if (inputRef.current) {
@@ -41,14 +40,14 @@ export function PromptForm({
   }, [])
 
   React.useEffect(() => {
-    socket.on('receiveMessage', message => {
-      if (message[1] === 'bot') {
-        setMessages([
-          ...messages,
-          { id: nanoid(), content: message, type: 'bot' } as BotMessage
-        ])
-      }
-    })
+    socket.onmessage = event => {
+      const message = event.data
+      console.log(event.data)
+      setMessages([
+        ...messages,
+        { id: nanoid(), content: message, type: 'bot' } as BotMessage
+      ])
+    }
   }, [socket])
 
   return (
@@ -62,7 +61,7 @@ export function PromptForm({
             ...messages,
             { id: nanoid(), content: input, type: 'user' } as UserMessage
           ])
-          socket.emit('sendMessage', [input, 'user'])
+          socket.send(input)
         }
         setInput('')
       }}
