@@ -31,6 +31,7 @@ export function PromptForm({
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
   const socket = new WebSocket('ws://localhost:8000/ws_test')
+  const [lastReceivedMessage, setLastReceivedMessage] = React.useState(null)
 
   React.useEffect(() => {
     if (inputRef.current) {
@@ -38,16 +39,24 @@ export function PromptForm({
     }
   }, [])
 
+  socket.onmessage = event => {
+    const message = event.data
+    setLastReceivedMessage(message)
+  }
+
   React.useEffect(() => {
-    socket.onmessage = event => {
-      const message = event.data
-      console.log(event.data)
+    if (lastReceivedMessage) {
       setMessages([
         ...messages,
-        { id: nanoid(), content: message, type: 'bot' } as BotMessage
+        {
+          id: nanoid(),
+          content: lastReceivedMessage,
+          type: 'bot'
+        } as BotMessage
       ])
+      setLastReceivedMessage(null)
     }
-  }, [socket])
+  }, [lastReceivedMessage])
 
   return (
     <form
