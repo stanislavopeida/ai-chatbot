@@ -11,26 +11,29 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip'
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
-import { useRouter } from 'next/navigation'
 import { BotMessage, Messages } from './chat'
 import { nanoid } from 'nanoid'
 import { UserMessage } from './chat'
-import { Socket } from 'socket.io-client'
+
+export const socket = new WebSocket('ws://localhost:8000/ws_test')
 
 export function PromptForm({
   input,
   setInput,
   messages,
-  setMessages
+  setMessages,
+  exampleMessages,
+  setExampleMessages
 }: {
   input: string
   setInput: (value: string) => void
   messages: Messages
   setMessages: any
+  exampleMessages: string[]
+  setExampleMessages: any
 }) {
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
-  const socket = new WebSocket('ws://localhost:8000/ws_test')
   const [lastReceivedMessage, setLastReceivedMessage] = React.useState(null)
 
   React.useEffect(() => {
@@ -44,18 +47,39 @@ export function PromptForm({
     setLastReceivedMessage(message)
   }
 
+  const safeJsonParse = (str: string) => {
+    try {
+      const jsonValue = JSON.parse(str)
+
+      return jsonValue
+    } catch {
+      return undefined
+    }
+  }
+
   React.useEffect(() => {
     if (lastReceivedMessage) {
-      setMessages([
-        ...messages,
-        {
-          id: nanoid(),
-          content: lastReceivedMessage,
-          type: 'bot'
-        } as BotMessage
-      ])
-      setLastReceivedMessage(null)
+      const jsonValue = safeJsonParse(lastReceivedMessage)
+      if (!jsonValue) {
+        setMessages([
+          ...messages,
+          {
+            id: nanoid(),
+            content: lastReceivedMessage,
+            type: 'bot'
+          } as BotMessage
+        ])
+      } else {
+        setExampleMessages([
+          jsonValue['questions'][0],
+          jsonValue['questions'][1],
+          jsonValue['questions'][2],
+          jsonValue['questions'][3]
+        ])
+      }
     }
+
+    return () => setLastReceivedMessage(null)
   }, [lastReceivedMessage])
 
   return (
