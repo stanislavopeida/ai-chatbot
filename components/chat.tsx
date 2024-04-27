@@ -3,37 +3,26 @@
 import { cn } from '@/lib/utils'
 import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
-import { useEffect, useState } from 'react'
-import { useUIState, useAIState } from 'ai/rsc'
-import { usePathname, useRouter } from 'next/navigation'
-import { Message } from '@/lib/chat/actions'
+import { useState } from 'react'
 import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
-import { toast } from 'sonner'
 
-export interface ChatProps extends React.ComponentProps<'div'> {
-  initialMessages?: Message[]
-  missingKeys: string[]
+export type Messages = (UserMessage | BotMessage)[]
+
+export type UserMessage = {
+  type: 'user'
+  id: string
+  content: string
 }
 
-export function Chat({ className, missingKeys }: ChatProps) {
-  const router = useRouter()
-  const path = usePathname()
+export type BotMessage = {
+  type: 'bot'
+  id: string
+  content: string
+}
+
+export function Chat() {
   const [input, setInput] = useState('')
-  const [messages] = useUIState()
-  const [aiState] = useAIState()
-
-  useEffect(() => {
-    const messagesLength = aiState.messages?.length
-    if (messagesLength === 2) {
-      router.refresh()
-    }
-  }, [aiState.messages, router])
-
-  useEffect(() => {
-    missingKeys.map(key => {
-      toast.error(`Missing ${key} environment variable!`)
-    })
-  }, [missingKeys])
+  const [messages, setMessages] = useState<Messages>([])
 
   const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } =
     useScrollAnchor()
@@ -43,10 +32,7 @@ export function Chat({ className, missingKeys }: ChatProps) {
       className="group w-full overflow-auto pl-0 peer-[[data-state=open]]:lg:pl-[250px] peer-[[data-state=open]]:xl:pl-[300px]"
       ref={scrollRef}
     >
-      <div
-        className={cn('pb-[200px] pt-4 md:pt-10', className)}
-        ref={messagesRef}
-      >
+      <div className={cn('pb-[200px] pt-4 md:pt-10')} ref={messagesRef}>
         {messages.length ? <ChatList messages={messages} /> : undefined}
         <div className="h-px w-full" ref={visibilityRef} />
       </div>
@@ -55,6 +41,8 @@ export function Chat({ className, missingKeys }: ChatProps) {
         setInput={setInput}
         isAtBottom={isAtBottom}
         scrollToBottom={scrollToBottom}
+        messages={messages}
+        setMessages={setMessages}
       />
     </div>
   )
