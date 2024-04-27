@@ -31,7 +31,6 @@ import {
   sleep,
   nanoid
 } from '@/lib/utils'
-import { saveChat } from '@/app/actions'
 import { SpinnerMessage, UserMessage } from '@/components/stocks/message'
 import { Chat } from '@/lib/types'
 
@@ -426,24 +425,8 @@ export const AI = createAI<AIState, UIState>({
       return uiState
     }
   },
-  unstable_onSetAIState: async ({ state, done }) => {
+  unstable_onSetAIState: async () => {
     'use server'
-
-    const { chatId, messages } = state
-
-    const createdAt = new Date()
-    const path = `/chat/${chatId}`
-    const title = messages[0].content.substring(0, 100)
-
-    const chat: Chat = {
-      id: chatId,
-      title,
-      createdAt,
-      messages,
-      path
-    }
-
-    await saveChat(chat)
   }
 })
 
