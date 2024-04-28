@@ -15,21 +15,19 @@ import { BotMessage, Messages } from './chat'
 import { nanoid } from 'nanoid'
 import { UserMessage } from './chat'
 
-export const socket = new WebSocket('ws://localhost:8000/ws_test')
+export const socket = new WebSocket('ws://localhost:8000/ws')
 
 export function PromptForm({
   input,
   setInput,
   messages,
   setMessages,
-  exampleMessages,
   setExampleMessages
 }: {
   input: string
   setInput: (value: string) => void
   messages: Messages
   setMessages: any
-  exampleMessages: string[]
   setExampleMessages: any
 }) {
   const { formRef, onKeyDown } = useEnterSubmit()

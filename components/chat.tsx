@@ -5,6 +5,7 @@ import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
 import { useState } from 'react'
 import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
+import { nanoid } from 'nanoid'
 
 export type Messages = (UserMessage | BotMessage)[]
 
@@ -22,7 +23,13 @@ export type BotMessage = {
 
 export function Chat() {
   const [input, setInput] = useState('')
-  const [messages, setMessages] = useState<Messages>([])
+  const [messages, setMessages] = useState<Messages>([
+    {
+      type: 'bot',
+      id: nanoid(),
+      content: "Hi. Tell me about yourself and what you're looking for."
+    } as BotMessage
+  ])
 
   const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } =
     useScrollAnchor()

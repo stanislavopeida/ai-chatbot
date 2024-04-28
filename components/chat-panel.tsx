@@ -68,7 +68,6 @@ export function ChatPanel({
             setInput={setInput}
             messages={messages}
             setMessages={setMessages}
-            exampleMessages={exampleMessages}
             setExampleMessages={setExampleMessages}
           />
         </div>
